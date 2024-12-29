@@ -62,31 +62,25 @@ impl Asset {
     }
 
     pub fn add_report(&mut self, report: Report) {
+        self.reports.clear();
         self.reports.push(report);
-    }
-
-    pub fn remove_report(&mut self, oracle_id: &AccountId) -> bool {
-        let initial_len = self.reports.len();
-        self.reports.retain(|rp| &rp.oracle_id != oracle_id);
-        self.reports.len() != initial_len
     }
 
     pub fn median_price(
         &self,
-        timestamp_cut: Timestamp,
-        min_num_recent_reports: usize,
     ) -> Option<Price> {
-        let mut recent_reports: Vec<_> = self
-            .reports
-            .iter()
-            .filter(|rp| rp.timestamp >= timestamp_cut)
-            .collect();
-        if recent_reports.len() < min_num_recent_reports {
-            return None;
-        }
-        let index = recent_reports.len() / 2;
-        recent_reports.select_nth_unstable_by(index, |a, b| a.price.cmp(&b.price));
-        recent_reports.get(index).map(|tp| tp.price)
+        self.reports.get(0).map(|tp| tp.price)
+        // let mut recent_reports: Vec<_> = self
+        //     .reports
+        //     .iter()
+        //     .filter(|rp| rp.timestamp >= timestamp_cut)
+        //     .collect();
+        // if recent_reports.len() < min_num_recent_reports {
+        //     return None;
+        // }
+        // let index = recent_reports.len() / 2;
+        // recent_reports.select_nth_unstable_by(index, |a, b| a.price.cmp(&b.price));
+        // recent_reports.get(index).map(|tp| tp.price)
     }
 }
 
